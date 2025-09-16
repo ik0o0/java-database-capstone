@@ -1,6 +1,70 @@
 package com.project.back_end.models;
 
+import java.beans.Transient;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
 public class Appointment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @NotNull
+    private Doctor doctor;
+
+    @ManyToOne
+    @NotNull
+    private Patient patient;
+
+    @Future(message = "Appointment time must be in the future")
+    private LocalDateTime appointementTime;
+
+    @NotNull
+    private int status;
+
+    @Transient
+    private LocalDateTime getEndTime() {
+        return this.appointementTime.plusHours(1);
+    }
+
+    @Transient
+    private LocalDate getAppointmentDate() {
+        return this.appointementTime.toLocalDate();
+    }
+
+    @Transient
+    private LocalTime getAppointmentTimeOnly() {
+        return this.appointementTime.toLocalTime();
+    }
+
+    protected Appointment(){}
+
+    public Long getId(){return this.id;}
+    public void setId(Long id){this.id = id;}
+
+    public Doctor getDoctor(){return this.doctor;}
+    public void setDoctor(Doctor doctor){this.doctor = doctor;}
+
+    public Patient getPatient(){return this.patient;}
+    public void setPatient(Patient patient){this.patient = patient;}
+
+    public LocalDateTime getAppointmentTime(){return this.appointementTime;}
+    public void setAppointmentTime(LocalDateTime appointmentTime){this.appointementTime = appointmentTime;}
+
+    public int getStatus(){return this.status;}
+    public void setStatus(int status){this.status = status;}
 
   // @Entity annotation:
 //    - Marks the class as a JPA entity, meaning it represents a table in the database.
