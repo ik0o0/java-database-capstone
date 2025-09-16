@@ -29,24 +29,24 @@ public class Appointment {
     private Patient patient;
 
     @Future(message = "Appointment time must be in the future")
-    private LocalDateTime appointementTime;
+    private LocalDateTime appointmentTime;
 
     @NotNull
     private int status;
 
     @Transient
     private LocalDateTime getEndTime() {
-        return this.appointementTime.plusHours(1);
+        return this.appointmentTime.plusHours(1);
     }
 
     @Transient
     private LocalDate getAppointmentDate() {
-        return this.appointementTime.toLocalDate();
+        return this.appointmentTime.toLocalDate();
     }
 
     @Transient
     private LocalTime getAppointmentTimeOnly() {
-        return this.appointementTime.toLocalTime();
+        return this.appointmentTime.toLocalTime();
     }
 
     protected Appointment(){}
@@ -60,8 +60,8 @@ public class Appointment {
     public Patient getPatient(){return this.patient;}
     public void setPatient(Patient patient){this.patient = patient;}
 
-    public LocalDateTime getAppointmentTime(){return this.appointementTime;}
-    public void setAppointmentTime(LocalDateTime appointmentTime){this.appointementTime = appointmentTime;}
+    public LocalDateTime getAppointmentTime(){return this.appointmentTime;}
+    public void setAppointmentTime(LocalDateTime appointmentTime){this.appointmentTime = appointmentTime;}
 
     public int getStatus(){return this.status;}
     public void setStatus(int status){this.status = status;}
