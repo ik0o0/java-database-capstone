@@ -1,5 +1,49 @@
 <!-- doctorDashboard.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
+    <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <script th:src="@{/js/render.js}" defer></script>
+    <script th:src="@{/js/util.js}" defer></script>
+    <script th:src="@{/js/doctorDashboard.js}" defer></script>
+    <script th:src="@{/js/components/header.js}" defer></script>
+    <script th:src="@{/js/components/footer.js}" defer></script>
+    <script th:src="@{/js/components/patientRows.js}" defer></script>
+    <script th:src="@{/js/services/patientServices.js}" defer></script>
+    <title>Doctor Dashboard</title>
+</head>
+<body onload="renderContent()">
+    <div class="container">
+        <div class="wrapper">
+            <div id="header"></div>
+            <div class="main-content">
+                <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
+                <section>
+                    <button id="todayButton">Today's Appointments</button>
+                    <input type="date" name="" id="datePicker">
+                </section>
 
+                <table id="patientTable">
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Name</th>
+                        <th>Phone No.</th>
+                        <th>Email</th>
+                        <th>Prescription</th>
+                    </tr>
+                    <tbody id="patientTableBody"></tbody>
+                </table>
+            </div>
+            <div id="footer"></div>
+        </div>
+    </div>
+</body>
+</html>
 <!-- 
 Step-by-Step Explanation of `doctorDashboard.html`
 This file defines the Doctor Dashboard interface, allowing doctors to view and manage their patient appointments, search records, and access patient prescriptions.
