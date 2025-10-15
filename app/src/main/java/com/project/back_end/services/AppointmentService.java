@@ -96,7 +96,7 @@ public class AppointmentService {
     public ResponseEntity<Map<String, Object>> getAppointment(String pname, LocalDate date, String token) {
         Map<String, Object> result = new HashMap<>();
 
-        Long doctorId = this.service.getDoctorIdFromToken(token);
+        Long doctorId = this.tokenService.getDoctorIdFromToken(token);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
 

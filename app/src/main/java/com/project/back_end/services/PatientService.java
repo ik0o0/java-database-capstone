@@ -44,7 +44,7 @@ public class PatientService {
 
     public ResponseEntity<Map<String, Object>> getPatientAppointment(Long id, String token) {
         Map<String, Object> response = new HashMap<>();
-        String email = this.tokenService.extractEmail(token);
+        String email = this.tokenService.extractIdentifier(token);
         Optional<Patient> patientOpt = this.patientRepository.findByEmail(email) != null ?
                 Optional.of(patientRepository.findByEmail(email)) : Optional.empty();
 
@@ -116,7 +116,7 @@ public class PatientService {
 
     public ResponseEntity<Map<String, Object>> getPatientDetails(String token) {
         Map<String, Object> response = new HashMap<>();
-        String email = this.tokenService.extractEmail(token);
+        String email = this.tokenService.extractIdentifier(token);
         Patient patient = this.patientRepository.findByEmail(email);
         if (patient == null) {
             response.put("message", "Patient not found");

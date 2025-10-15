@@ -57,7 +57,7 @@ public class Service {
             response.put("message", "Invalid credentials");
             return ResponseEntity.status(401).body(response);
         }
-        String token = this.tokenService.generateToken(admin.getUsername(), "ADMIN");
+        String token = this.tokenService.generateToken(admin.getUsername());
         response.put("token", token);
         return ResponseEntity.ok(response);
     }
@@ -90,14 +90,14 @@ public class Service {
             response.put("message", "Invalid credentials");
             return ResponseEntity.status(401).body(response);
         }
-        String token = this.tokenService.generateToken(patient.getEmail(), "PATIENT");
+        String token = this.tokenService.generateToken(patient.getEmail());
         response.put("token", token);
         return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
         Map<String, Object> response = new HashMap<>();
-        String email = this.tokenService.extractEmail(token);
+        String email = this.tokenService.extractIdentifier(token);
         Patient patient = this.patientRepository.findByEmail(email);
         if (patient == null) {
             response.put("message", "Unauthorized");

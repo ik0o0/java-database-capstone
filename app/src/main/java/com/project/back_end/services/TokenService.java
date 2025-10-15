@@ -60,6 +60,7 @@ public class TokenService {
                 .subject(identifier)
                 .issuedAt(now)
                 .expiration(expiry)
+                .signWith(this.getSigningKey())
                 .toString();
     }
 
@@ -93,6 +94,12 @@ public class TokenService {
 
     public SecretKey getSigningKey() {
         return this.key;
+    }
+
+    public Long getDoctorIdFromToken(String token) {
+        String identifier = extractIdentifier(token);
+        Doctor doctor = this.doctorRepository.findByEmail(identifier);
+        return doctor.getId();
     }
 
 // 1. **@Component Annotation**
