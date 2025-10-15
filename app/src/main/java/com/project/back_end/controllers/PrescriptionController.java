@@ -1,6 +1,63 @@
 package com.project.back_end.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.back_end.models.Prescription;
+import com.project.back_end.services.PrescriptionService;
+import com.project.back_end.services.Service;
+
+@RestController
+@RequestMapping("${api.path}" + "prescription")
 public class PrescriptionController {
+
+    @Autowired
+    private PrescriptionService prescriptionService;
+
+    @Autowired
+    private Service service;
+
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> savePrecription(
+        @RequestParam String token,
+        @RequestBody Prescription prescription
+    ) {
+        Map<String, String> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "doctor");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", validateToken.getBody().get("message"));
+            return ResponseEntity.status(401).body(response);
+        }
+
+        return this.prescriptionService.savePrescription(prescription);
+    }
+
+    @GetMapping("/{appointmentId}/{token}")
+    public ResponseEntity<Map<String, Object>> getPrescription(
+        @RequestParam Long appointmentId,
+        @RequestParam String token
+    ) {
+        Map<String, Object> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "doctor");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", validateToken.getBody().get("message"));
+            return ResponseEntity.status(401).body(response);
+        }
+        
+        return this.prescriptionService.getPrescription(appointmentId);
+    }
     
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller.

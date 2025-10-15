@@ -1,7 +1,49 @@
 package com.project.back_end.services;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.project.back_end.models.Prescription;
+import com.project.back_end.repo.PrescriptionRepository;
+
+@Service
 public class PrescriptionService {
     
+    private final PrescriptionRepository prescriptionRepository;
+
+    public PrescriptionService(PrescriptionRepository prescriptionRepository) {
+        this.prescriptionRepository = prescriptionRepository;
+    }
+
+    public ResponseEntity<Map<String, String>> savePrescription(Prescription prescription) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            this.prescriptionRepository.save(prescription);
+            response.put("message", "Prescription saved");
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            response.put("message", "Failed to save prescription");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    public ResponseEntity<Map<String, Object>> getPrescription(Long appointmentId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Prescription> prescriptions = this.prescriptionRepository.findByAppointmentId(appointmentId);
+            response.put("prescriptions", prescriptions);
+            response.put("count", prescriptions.size());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "Failed to retrieve prescription");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
  // 1. **Add @Service Annotation**:
 //    - The `@Service` annotation marks this class as a Spring service component, allowing Spring's container to manage it.
 //    - This class contains the business logic related to managing prescriptions in the healthcare system.

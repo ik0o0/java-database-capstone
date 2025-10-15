@@ -1,7 +1,103 @@
 package com.project.back_end.controllers;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.back_end.models.Appointment;
+import com.project.back_end.services.AppointmentService;
+import com.project.back_end.services.Service;
+
+@RestController
+@RequestMapping("/appointments")
 public class AppointmentController {
+
+    @Autowired
+    private Service service;
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @GetMapping("/{date}/{patientName}/{token}")
+    public ResponseEntity<Map<String, Object>> getAppointments(
+        @RequestParam LocalDate date,
+        @RequestParam String patientName,
+        @RequestParam String token
+    ) {
+        Map<String, Object> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", "The token is not valid.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        return this.appointmentService.getAppointment(patientName, date, token);
+    }
+
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> bookAppointment(
+        @RequestParam String token,
+        @RequestBody Appointment appointment
+    ) {
+        Map<String, String> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            return validateToken;
+        }
+
+        if (this.service.validateAppointment(appointment) < 1) {
+            response.put("message", "The appointment is not valid.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (this.appointmentService.bookAppointment(appointment) < 1) {
+            response.put("message", "The appointment is not save.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        response.put("message", "Appointment created.");
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @PutMapping("/{token}")
+    public ResponseEntity<Map<String, String>> updateAppointment(
+        @PathVariable String token,
+        @RequestBody Appointment appointment
+    ) {
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            return validateToken;
+        }
+        return this.appointmentService.updateAppointment(appointment);
+    }
+
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, String>> cancelAppointment(
+        @PathVariable Long id,
+        @PathVariable String token
+    ) {
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            return validateToken;
+        }
+
+        return this.appointmentService.cancelAppointment(id, token);
+    }
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller.

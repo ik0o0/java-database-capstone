@@ -1,6 +1,102 @@
 package com.project.back_end.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.back_end.DTO.Login;
+import com.project.back_end.models.Patient;
+import com.project.back_end.services.PatientService;
+import com.project.back_end.services.Service;
+
+@RestController
+@RequestMapping("/patient")
 public class PatientController {
+
+    @Autowired
+    private PatientService patientService;
+
+    @Autowired
+    private Service service;
+
+    @GetMapping("/{token}")
+    public ResponseEntity<Map<String, Object>> getPatient(@RequestParam String token) {
+        Map<String, Object> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", validateToken.getBody().get("message"));
+            return ResponseEntity.status(401).body(response);
+        }
+
+        return this.patientService.getPatientDetails(token);
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createPatient(@RequestBody Patient patient) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (!this.service.validatePatient(patient)) {
+            response.put("message", "Patient with email id or phone no already exist");
+            return ResponseEntity.status(404).body(response);
+        }
+
+        int createPatientResult = this.patientService.createPatient(patient);
+        if (createPatientResult < 1) {
+            response.put("message", "Internal server error.");
+            return ResponseEntity.status(500).body(response);
+        }
+
+        response.put("message", "Signup successfully.");
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody Login login) {
+        return this.service.validatePatientLogin(login);
+    }
+
+    @GetMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, Object>> getPatientAppointment(
+        @RequestParam Long id,
+        @RequestParam String token
+    ) {
+        Map<String, Object> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", validateToken.getBody().get("message"));
+            return ResponseEntity.status(401).body(response);
+        }
+
+        return this.patientService.getPatientAppointment(id, token);
+    }
+
+    @GetMapping("/filter/{condition}/{name}/{token}")
+    public ResponseEntity<Map<String, Object>> filterPatientAppointment(
+        @RequestParam String condition,
+        @RequestParam String name,
+        @RequestParam String token
+    ) {
+        Map<String, Object> response = new HashMap<>();
+
+        ResponseEntity<Map<String, String>> validateToken = this.service.validateToken(token, "patient");
+        if (validateToken.getStatusCode() != HttpStatusCode.valueOf(200)) {
+            response.put("message", validateToken.getBody().get("message"));
+            return ResponseEntity.status(401).body(response);
+        }
+
+        return this.service.filterPatient(condition, name, token);
+    }
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller for patient-related operations.

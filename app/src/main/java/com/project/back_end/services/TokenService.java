@@ -1,6 +1,100 @@
 package com.project.back_end.services;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.bson.codecs.jsr310.LocalDateCodec;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.project.back_end.models.Admin;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.models.Patient;
+import com.project.back_end.repo.AdminRepository;
+import com.project.back_end.repo.DoctorRepository;
+import com.project.back_end.repo.PatientRepository;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+
+@Component
 public class TokenService {
+
+    private final AdminRepository adminRepository;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private SecretKey key;
+
+    public TokenService(
+        AdminRepository adminRepository,
+        DoctorRepository doctorRepository,
+        PatientRepository patientRepository
+    ) {
+        this.adminRepository = adminRepository;
+        this.doctorRepository = doctorRepository;
+        this.patientRepository = patientRepository;
+    }
+
+    @PostConstruct
+    private void init() {
+        this.key =  Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String generateToken(String identifier) {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.DAY_OF_MONTH, 5);
+        Date expiry = calendar.getTime();
+        
+        return Jwts.builder()
+                .subject(identifier)
+                .issuedAt(now)
+                .expiration(expiry)
+                .toString();
+    }
+
+    public String extractIdentifier(String token) {
+        return Jwts.parser()
+            .verifyWith(this.key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
+    }
+
+    public boolean validateToken(String token, String userType) {
+        try {
+            String identifier = extractIdentifier(token);
+            if ("ADMIN".equalsIgnoreCase(userType)) {
+                Admin admin = this.adminRepository.findByUsername(identifier);
+                return admin != null;
+            } else if ("DOCTOR".equalsIgnoreCase(userType)) {
+                Doctor doctor = this.doctorRepository.findByEmail(identifier);
+                return doctor != null;
+            } else if ("PATIENT".equalsIgnoreCase(userType)) {
+                Patient patient = this.patientRepository.findByEmail(identifier);
+                return patient != null;
+            }
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public SecretKey getSigningKey() {
+        return this.key;
+    }
+
 // 1. **@Component Annotation**
 // The @Component annotation marks this class as a Spring component, meaning Spring will manage it as a bean within its application context.
 // This allows the class to be injected into other Spring-managed components (like services or controllers) where it's needed.
