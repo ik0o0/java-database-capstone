@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Doctor;
@@ -76,6 +77,7 @@ public class DoctorService {
         }
     }
 
+    @Transactional
     public List<Doctor> getDoctors() {
         return this.doctorRepository.findAll();
     }

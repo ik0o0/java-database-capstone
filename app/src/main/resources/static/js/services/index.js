@@ -5,13 +5,14 @@ const ADMIN_API = API_BASE_URL + "/admin";
 const DOCTOR_API = API_BASE_URL + "/doctor/login";
 
 window.onload = function () {
-  const adminBtn = document.getElementById("adminLogin");
-  const doctorBtn = document.getElementById("doctorLogin");
+  const adminBtn = document.getElementById("admin");
+  const doctorBtn = document.getElementById("doctor");
   if (adminBtn) {
     adminBtn.addEventListener("click", () => {
       openModal("adminLogin");
     });
-  } else if (doctorBtn) {
+  }
+  if (doctorBtn) {
     doctorBtn.addEventListener("click", () => {
       openModal("doctorLogin");
     });
@@ -43,11 +44,10 @@ window.adminLoginHandler = async function() {
   }
 }
 
-window.doctorLoginHandler = async function () {
+window.doctorLoginHandler = async function() {
   try {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
-
     const doctor = { email, password };
 
     const response = await fetch(DOCTOR_API, {
@@ -59,7 +59,7 @@ window.doctorLoginHandler = async function () {
     });
 
     if (!response.ok) {
-      alert("Invalid credentials!");
+      window.alert("Invalid credentials!");
       return;
     }
 

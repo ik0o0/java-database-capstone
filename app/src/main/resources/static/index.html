@@ -11,24 +11,24 @@
     <script src="./js/render.js" defer></script>
     <script src="./js/components/header.js" defer></script>
     <script src="./js/components/footer.js" defer></script>
-    <title>Document</title>
+    <title>Hospital CMS</title>
  </head>
  <body>
     <main>
         <div class="container">
             <div class="wrapper">
-                <div class="header"></div>
+                <div id="header" class="header"></div>
                 <main class="main-content">
                     <h2>Select Your Role</h2>
                     <button id="admin" onclick="">Admin</button>
                     <button id="doctor" onclick="">Doctor</button>
                     <button id="patient" onclick="">Patient</button>
                     <div id="modal" class="modal">
-                        <button id="closeModal"></button>
-                        <div id="modal-body"></div>
+                        <button id="closeModal" class="close">&times;</button>
+                        <div id="modal-body" class="modal-content"></div>
                     </div>
                 </main>
-                <div class="footer"></div>
+                <div id="footer" class="footer"></div>
             </div>
         </div>
     </main>

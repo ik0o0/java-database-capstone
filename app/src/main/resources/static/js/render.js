@@ -7,7 +7,7 @@ function selectRole(role) {
     if (token) {
       window.location.href = `/adminDashboard/${token}`;
     }
-  } if (role === "patient") {
+  } else if (role === "patient") {
     window.location.href = "/pages/patientDashboard.html";
   } else if (role === "doctor") {
     if (token) {

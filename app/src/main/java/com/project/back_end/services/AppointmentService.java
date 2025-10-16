@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.project.back_end.controllers.ValidationFailed;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.DoctorRepository;
@@ -21,8 +20,6 @@ import com.project.back_end.repo.PatientRepository;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final PatientRepository patientRepository;
-    private final DoctorRepository doctorRepository;
     private final TokenService tokenService;
     private final com.project.back_end.services.Service service;
 
@@ -34,8 +31,6 @@ public class AppointmentService {
         com.project.back_end.services.Service service) {
         this.appointmentRepository = appointmentRepository;
         this.tokenService = tokenService;
-        this.patientRepository = patientRepository;
-        this.doctorRepository = doctorRepository;
         this.service = service;
     }
 

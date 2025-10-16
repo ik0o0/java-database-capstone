@@ -53,6 +53,8 @@ function renderHeader() {
   attachHeaderButtonListeners();
 }
 
+renderHeader();
+
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("userRole");
